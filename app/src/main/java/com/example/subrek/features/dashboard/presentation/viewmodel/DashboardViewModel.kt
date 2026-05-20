@@ -46,7 +46,7 @@ class DashboardViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun loadDashboardData() {
+    fun loadDashboardData() {
         viewModelScope.launch {
             repository.getAllSubscriptions()
                 .onStart { _uiState.update { it.copy(isLoading = true) } }
@@ -57,18 +57,30 @@ class DashboardViewModel @Inject constructor(
                     val stats = getDashboardStatsUseCase(subs)
 
                     // Menghitung pengeluaran khusus bulan ini
-                    val currentMonth = LocalDate.now().month
+                    val today = LocalDate.now()
+                    val currentMonth = today.month
+                    val currentYear = today.year
+                    val nextMonth = today.plusMonths(1)
                     val activeSubs = subs.filter { it.status.name == "ACTIVE" || it.status.name == "TRIAL" }
 
                     val totalThisMonth = activeSubs.sumOf { sub ->
+                        val nextDate = sub.nextPaymentDate
                         when (sub.billingCycle.name) {
-                            "MONTHLY" -> sub.price
+                            "MONTHLY" -> {
+                                val isCurrentMonth = nextDate.month == currentMonth && nextDate.year == currentYear
+                                val isNextMonth = nextDate.month == nextMonth.month && nextDate.year == nextMonth.year
+                                if (isCurrentMonth || isNextMonth) sub.price else 0.0
+                            }
                             "WEEKLY" -> sub.price * 4.0
                             "YEARLY" -> {
-                                if (sub.nextPaymentDate.month == currentMonth) sub.price else 0.0
+                                val isCurrentMonth = nextDate.month == currentMonth && nextDate.year == currentYear
+                                if (isCurrentMonth) sub.price else 0.0
                             }
                             else -> 0.0
                         }
+                    }
+                    subs.forEach { sub ->
+                        android.util.Log.d("DASH_SUBS", "name=${sub.name} price=${sub.price} cycle=${sub.billingCycle} nextPayment=${sub.nextPaymentDate}")
                     }
 
                     _uiState.update { it.copy(
@@ -99,6 +111,8 @@ class DashboardViewModel @Inject constructor(
             repository.deleteSubscription(subscriptionId)
         }
     }
+
+
 
     // 👈 FITUR BARU: Menandai subscription telah dibayar dan memajukan tanggal siklus berikutnya
     fun markAsPaid(subscription: Subscription) {

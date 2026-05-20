@@ -102,8 +102,42 @@ class SubscriptionRepositoryImpl @Inject constructor(
         billingCycle: String,
         startDate: String
     ) {
-        // Logika update ke Supabase dihapus total
-        subscriptionDao.updateSubscriptionBilling(id, price, billingCycle, startDate)
+        val parsedStartDate = try {
+            LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
+        } catch (e: Exception) {
+            LocalDate.now()
+        }
+
+        // Hitung nextPaymentDate yang benar dari startDate + siklus
+        val today = LocalDate.now()
+        val nextPaymentDate = calculateNextPaymentDate(parsedStartDate, billingCycle, today)
+
+        android.util.Log.d("UPDATE_BILLING", "id=$id price=$price cycle=$billingCycle nextPayment=$nextPaymentDate")
+
+        subscriptionDao.updateSubscriptionBilling(
+            id = id,
+            price = price,
+            billingCycle = billingCycle,
+            startDate = startDate,
+            nextPaymentDate = nextPaymentDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+        )
+    }
+
+    private fun calculateNextPaymentDate(
+        startDate: LocalDate,
+        billingCycle: String,
+        today: LocalDate
+    ): LocalDate {
+        var next = startDate
+        while (next.isBefore(today)) {
+            next = when (billingCycle.uppercase()) {
+                "WEEKLY"  -> next.plusWeeks(1)
+                "MONTHLY" -> next.plusMonths(1)
+                "YEARLY"  -> next.plusYears(1)
+                else      -> next.plusMonths(1)
+            }
+        }
+        return next
     }
 
     override suspend fun terminateSubscription(id: String) {
