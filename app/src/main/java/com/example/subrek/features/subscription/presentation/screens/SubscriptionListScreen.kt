@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
+import java.text.NumberFormat
+import java.util.Locale
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -108,8 +110,11 @@ fun SubscriptionItem(subscription: Subscription) {
                 Text(text = subscription.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 // 🛍️ SESUDAH: Row tag/SuggestionChip telah dihapus sepenuhnya agar layout lebih minimalis
             }
+            val formattedPrice = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
+                maximumFractionDigits = 0
+            }.format(subscription.price)
             Text(
-                text = "${subscription.currency} ${subscription.price}",
+                text = formattedPrice,
                 fontWeight = FontWeight.Bold,
                 color = Blue600
             )

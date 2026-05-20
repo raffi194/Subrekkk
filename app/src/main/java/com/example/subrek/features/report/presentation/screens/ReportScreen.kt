@@ -111,7 +111,9 @@ fun ReportScreen(viewModel: ReportViewModel) {
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text("Tren Biaya Pengeluaran", color = Slate400, fontSize = 13.sp)
-                            val formattedPrice = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).format(report.totalSpend)
+                            val formattedPrice = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
+                                maximumFractionDigits = 0
+                            }.format(report.totalSpend)
                             Text(formattedPrice, fontSize = 24.sp, fontWeight = FontWeight.Black, color = Slate50)
                             
                             Spacer(modifier = Modifier.height(24.dp))
@@ -152,7 +154,9 @@ fun ReportScreen(viewModel: ReportViewModel) {
                     // 3. BREAKDOWN PER KATEGORI
                     Text("Breakdown Per Kategori", color = Slate50, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     report.categoryBreakdown.forEach { (category, amount) ->
-                        val formattedAmount = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).format(amount)
+                        val formattedAmount = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
+                            maximumFractionDigits = 0
+                        }.format(amount)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

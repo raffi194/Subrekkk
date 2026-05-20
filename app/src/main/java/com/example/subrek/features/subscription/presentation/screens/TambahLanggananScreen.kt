@@ -145,7 +145,9 @@ fun TambahLanggananScreen(
                                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                                     ) {
                                         Row(
-                                            modifier = Modifier.padding(16.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(16.dp),
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
@@ -184,9 +186,9 @@ fun TambahLanggananScreen(
                         }
 
                         OutlinedTextField(
-                            value = if (isFreeTrial) "0" else priceInput,
+                            value = priceInput,
                             onValueChange = { priceInput = it },
-                            enabled = !isFreeTrial,
+                            enabled = true,
                             label = { Text("Biaya Berlangganan") },
                             placeholder = { Text("0", color = Color.Gray.copy(alpha = 0.5f)) },
                             leadingIcon = { Text("Rp ", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 12.dp)) },
@@ -195,9 +197,9 @@ fun TambahLanggananScreen(
                         )
 
                         OutlinedTextField(
-                            value = if (isFreeTrial) "Free Trial" else paymentMethod,
+                            value = paymentMethod,
                             onValueChange = { paymentMethod = it },
-                            enabled = !isFreeTrial,
+                            enabled = true,
                             label = { Text("Metode Pembayaran") },
                             placeholder = { Text("Contoh: Gopay, Bank Transfer...", color = Color.Gray.copy(alpha = 0.5f)) },
                             modifier = Modifier.fillMaxWidth()
@@ -259,8 +261,8 @@ fun TambahLanggananScreen(
 
                         Button(
                             onClick = {
-                                val cleanPrice = if (isFreeTrial) 0.0 else (priceInput.replace(",", ".").toDoubleOrNull() ?: 0.0)
-                                val finalPaymentMethod = if (isFreeTrial) "Free Trial" else (paymentMethod.ifBlank { "Lainnya" })
+                                val cleanPrice = priceInput.replace(",", ".").toDoubleOrNull() ?: 0.0
+                                val finalPaymentMethod = paymentMethod.ifBlank { "Lainnya" }
                                 viewModel.saveNewSubscription(
                                     name = selectedAppForForm!!.name,
                                     iconUrl = selectedAppForForm!!.iconUrl,
@@ -287,12 +289,6 @@ fun TambahLanggananScreen(
             // =========================================================================
             if (showAppDialog) {
                 var appName by remember { mutableStateOf("") }
-                var appPrice by remember { mutableStateOf("") }
-                var appCycle by remember { mutableStateOf("Monthly") }
-                var appPaymentMethod by remember { mutableStateOf("") }
-                var appDate by remember { mutableStateOf("") }
-                var isAppCycleExpanded by remember { mutableStateOf(false) }
-
                 var selectedImageUri by remember { mutableStateOf<android.net.Uri?>(null) }
 
                 val imagePickerLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
@@ -300,18 +296,6 @@ fun TambahLanggananScreen(
                 ) { uri: android.net.Uri? ->
                     selectedImageUri = uri
                 }
-
-                // Setup DatePicker Dialog untuk Custom App
-                val customAppDatePickerDialog = DatePickerDialog(
-                    context,
-                    { _, year, month, dayOfMonth ->
-                        val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
-                        appDate = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-                )
 
                 AlertDialog(
                     onDismissRequest = { showAppDialog = false },
@@ -366,88 +350,14 @@ fun TambahLanggananScreen(
                                 placeholder = { Text("Contoh: Mola TV", color = Color.Gray.copy(alpha = 0.5f)) },
                                 modifier = Modifier.fillMaxWidth()
                             )
-
-                            OutlinedTextField(
-                                value = appPrice,
-                                onValueChange = { appPrice = it },
-                                label = { Text("Biaya *") },
-                                placeholder = { Text("0", color = Color.Gray.copy(alpha = 0.5f)) },
-                                leadingIcon = { Text("Rp ", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 12.dp)) },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                ExposedDropdownMenuBox(
-                                    expanded = isAppCycleExpanded,
-                                    onExpandedChange = { isAppCycleExpanded = !isAppCycleExpanded }
-                                ) {
-                                    OutlinedTextField(
-                                        value = appCycle,
-                                        onValueChange = {},
-                                        readOnly = true,
-                                        label = { Text("Siklus Penagihan *") },
-                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isAppCycleExpanded) },
-                                        modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                                    )
-                                    ExposedDropdownMenu(
-                                        expanded = isAppCycleExpanded,
-                                        onDismissRequest = { isAppCycleExpanded = false }
-                                    ) {
-                                        listOf("Weekly", "Monthly", "Yearly").forEach { opt ->
-                                            DropdownMenuItem(
-                                                text = { Text(opt) },
-                                                onClick = { appCycle = opt; isAppCycleExpanded = false }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            OutlinedTextField(
-                                value = appPaymentMethod,
-                                onValueChange = { appPaymentMethod = it },
-                                label = { Text("Metode Pembayaran *") },
-                                placeholder = { Text("Contoh: Gopay, dll", color = Color.Gray.copy(alpha = 0.5f)) },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
-                            val customInteractionSource = remember { MutableInteractionSource() }
-                            OutlinedTextField(
-                                value = appDate,
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Tanggal Mulai *") },
-                                placeholder = { Text("Pilih Tanggal", color = Color.Gray.copy(alpha = 0.5f)) },
-                                trailingIcon = {
-                                    IconButton(onClick = { customAppDatePickerDialog.show() }) {
-                                        Icon(imageVector = Icons.Default.DateRange, contentDescription = "Pilih Tanggal")
-                                    }
-                                },
-                                interactionSource = customInteractionSource,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable(
-                                        interactionSource = customInteractionSource,
-                                        indication = null,
-                                        onClick = { customAppDatePickerDialog.show() }
-                                    )
-                            )
                         }
                     },
                     confirmButton = {
                         Button(
                             onClick = {
-                                if (appName.isNotBlank() && appPrice.isNotBlank() && appPaymentMethod.isNotBlank() && appDate.isNotBlank()) {
-                                    val cleanPrice = appPrice.replace(",", ".").toDoubleOrNull() ?: 0.0
-
-                                    viewModel.addCustomAppWithImage(
+                                if (appName.isNotBlank()) {
+                                    viewModel.addCustomAppOnly(
                                         name = appName,
-                                        price = cleanPrice,
-                                        currency = "IDR",
-                                        billingCycle = appCycle.uppercase(),
-                                        paymentMethod = appPaymentMethod,
-                                        nextPaymentDate = appDate,
                                         imageUri = selectedImageUri
                                     )
                                     showAppDialog = false
