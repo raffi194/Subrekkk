@@ -296,7 +296,7 @@ fun SwipeToDeleteSubscriptionItem(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .matchParentSize()
                 .background(Rose500, shape = RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.CenterEnd
         ) {
@@ -435,7 +435,7 @@ fun SubscriptionItemRow(
                     else -> {
                         val formattedDate = sub.nextPaymentDate
                             .format(DateTimeFormatter.ofPattern("dd MMM yy", Locale.ENGLISH))
-                        BadgeCard("Tempo: $formattedDate", Emerald500.copy(alpha = 0.15f), Emerald500)
+                        BadgeCard("$formattedDate", Emerald500.copy(alpha = 0.15f), Emerald500)
                     }
                 }
             }
