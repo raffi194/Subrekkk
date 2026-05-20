@@ -95,6 +95,33 @@ class TambahLanggananViewModel @Inject constructor(
             repository.deleteCustomApp(item.id) // Kirim ID saja
         }
     }
+    fun addCustomAppOnly(
+        name: String,
+        imageUri: android.net.Uri?
+    ) {
+        viewModelScope.launch {
+            var remoteIconUrl: String? = null
+
+            if (imageUri != null) {
+                try {
+                    remoteIconUrl = repository.uploadAppIconStorage(imageUri)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            val generatedId = UUID.randomUUID().toString()
+
+            repository.insertCustomApp(
+                LocalAppEntity(
+                    id = generatedId,
+                    name = name,
+                    iconUrl = remoteIconUrl
+                )
+            )
+        }
+    }
+
     fun addCustomAppWithImage(
         name: String,
         price: Double,
