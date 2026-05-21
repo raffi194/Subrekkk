@@ -32,6 +32,13 @@ import com.example.subrek.features.subscription.presentation.viewmodel.TambahLan
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.TextButton
+import java.time.Instant
+import java.time.ZoneId
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +53,9 @@ fun TambahLanggananScreen(
 
     var showAppDialog by remember { mutableStateOf(false) }
     var appToDelete by remember { mutableStateOf<CatalogItem?>(null) }
+
+    val datePickerState = rememberDatePickerState()
+    var showDatePicker by remember { mutableStateOf(false) }
 
     // State Input Form Detail Berlangganan
     var priceInput by remember { mutableStateOf("") }
@@ -157,8 +167,13 @@ fun TambahLanggananScreen(
                                     ) {
                                         Row(
                                             modifier = Modifier
+<<<<<<< HEAD
                                                 .padding(16.dp)
                                                 .fillMaxWidth(),
+=======
+                                                .fillMaxWidth()
+                                                .padding(16.dp),
+>>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
@@ -374,7 +389,11 @@ fun TambahLanggananScreen(
                         Button(
                             onClick = {
                                 if (appName.isNotBlank()) {
+<<<<<<< HEAD
                                     viewModel.addOnlyCustomApp(
+=======
+                                    viewModel.addCustomAppOnly(
+>>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                                         name = appName,
                                         imageUri = selectedImageUri
                                     )

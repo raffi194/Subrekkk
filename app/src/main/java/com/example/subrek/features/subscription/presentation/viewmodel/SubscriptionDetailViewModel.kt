@@ -9,6 +9,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import java.time.format.DateTimeFormatter
+
 
 data class DetailUiState(
     val subscription: Subscription? = null,
@@ -27,6 +33,9 @@ class SubscriptionDetailViewModel @Inject constructor(
     // Mengambil ID parameter dari argumen navigasi Compose
     private val subscriptionId: String = checkNotNull(savedStateHandle["subscriptionId"])
 
+    var priceInput by mutableStateOf("")
+    var selectedCycle by mutableStateOf("MONTHLY")
+    var startDateInput by mutableStateOf("")
     private val _uiState = MutableStateFlow(DetailUiState())
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
 
@@ -35,18 +44,21 @@ class SubscriptionDetailViewModel @Inject constructor(
     }
 
     private fun loadSubscriptionDetail() {
-        _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             repository.getSubscriptionByIdFlow(subscriptionId)
-                .catch { error ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = error.localizedMessage) }
-                }
-                .collect { subscription ->
-                    _uiState.update { it.copy(subscription = subscription, isLoading = false) }
+                .collect { sub ->
+                    sub?.let {  // ← tambahkan null check
+                        priceInput = it.price.toInt().toString()
+                        selectedCycle = it.billingCycle.name
+                        startDateInput = it.startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+
+                        _uiState.update { state -> state.copy(subscription = it, isLoading = false) }
+                    }
                 }
         }
     }
 
+<<<<<<< HEAD
     fun updateBillingDetails(
         price: Double,
         billingCycle: String,
@@ -58,6 +70,17 @@ class SubscriptionDetailViewModel @Inject constructor(
             try {
                 val status = if (isTrial) "TRIAL" else "ACTIVE"
                 repository.updateSubscriptionBilling(subscriptionId, price, billingCycle, startDate, paymentMethod, isTrial, status)
+=======
+    fun updateSubscriptionBilling() {
+        viewModelScope.launch {
+            try {
+                // Parsing harga
+                val price = priceInput.replace(".", "").replace(",", "").toDoubleOrNull() ?: 0.0
+
+                // Panggil repository
+                repository.updateSubscriptionBilling(subscriptionId, price, selectedCycle, startDateInput)
+
+>>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                 _uiState.update { it.copy(isUpdateSuccess = true) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessage = e.localizedMessage) }

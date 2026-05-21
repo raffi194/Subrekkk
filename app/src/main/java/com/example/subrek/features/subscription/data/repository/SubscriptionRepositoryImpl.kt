@@ -108,6 +108,7 @@ class SubscriptionRepositoryImpl @Inject constructor(
         isTrial: Boolean,
         status: String
     ) {
+<<<<<<< HEAD
         val existing = subscriptionDao.getSubscriptionById(id)
         val calculatedNextPaymentDate = if (existing != null && (existing.price == 0.0 || existing.paymentMethod == "Belum Diatur")) {
             startDate
@@ -115,16 +116,52 @@ class SubscriptionRepositoryImpl @Inject constructor(
             existing?.nextPaymentDate ?: startDate
         }
         
+=======
+        val parsedStartDate = try {
+            LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
+        } catch (e: Exception) {
+            LocalDate.now()
+        }
+
+        // Hitung nextPaymentDate yang benar dari startDate + siklus
+        val today = LocalDate.now()
+        val nextPaymentDate = calculateNextPaymentDate(parsedStartDate, billingCycle, today)
+
+        android.util.Log.d("UPDATE_BILLING", "id=$id price=$price cycle=$billingCycle nextPayment=$nextPaymentDate")
+
+>>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
         subscriptionDao.updateSubscriptionBilling(
             id = id,
             price = price,
             billingCycle = billingCycle,
             startDate = startDate,
+<<<<<<< HEAD
             nextPaymentDate = calculatedNextPaymentDate,
             paymentMethod = paymentMethod,
             isTrial = isTrial,
             status = status
         )
+=======
+            nextPaymentDate = nextPaymentDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+        )
+    }
+
+    private fun calculateNextPaymentDate(
+        startDate: LocalDate,
+        billingCycle: String,
+        today: LocalDate
+    ): LocalDate {
+        var next = startDate
+        while (next.isBefore(today)) {
+            next = when (billingCycle.uppercase()) {
+                "WEEKLY"  -> next.plusWeeks(1)
+                "MONTHLY" -> next.plusMonths(1)
+                "YEARLY"  -> next.plusYears(1)
+                else      -> next.plusMonths(1)
+            }
+        }
+        return next
+>>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
     }
 
     override suspend fun terminateSubscription(id: String) {

@@ -61,23 +61,38 @@ interface SubscriptionDao {
     fun getSubscriptionByIdFlow(id: String): Flow<SubscriptionEntity?>
 
     @Query("""
+<<<<<<< HEAD
         UPDATE subscriptions 
         SET price = :price, billing_cycle = :billingCycle, start_date = :startDate,
             next_payment_date = :nextPaymentDate,
             payment_method = :paymentMethod, is_trial = :isTrial, status = :status
         WHERE id = :id
     """)
+=======
+    UPDATE subscriptions 
+    SET price = :price, 
+        billing_cycle = :billingCycle, 
+        start_date = :startDate,
+        next_payment_date = :nextPaymentDate
+    WHERE id = :id
+""")
+>>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
     suspend fun updateSubscriptionBilling(
         id: String,
         price: Double,
         billingCycle: String,
         startDate: String,
+<<<<<<< HEAD
         nextPaymentDate: String,
         paymentMethod: String,
         isTrial: Boolean,
         status: String
     )
 
+=======
+        nextPaymentDate: String  // ← parameter terpisah
+    )
+>>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
     @Query("UPDATE subscriptions SET status = 'ENDED' WHERE id = :id")
     suspend fun terminateSubscription(id: String)
 
