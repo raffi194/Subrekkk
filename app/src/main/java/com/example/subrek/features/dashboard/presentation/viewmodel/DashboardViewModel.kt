@@ -53,7 +53,6 @@ class DashboardViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-<<<<<<< HEAD
     private fun getPaymentDatesInMonth(sub: Subscription, targetMonthDate: LocalDate): List<LocalDate> {
         val dates = mutableListOf<LocalDate>()
         val start = sub.startDate
@@ -101,11 +100,9 @@ class DashboardViewModel @Inject constructor(
         endedSubs: List<Subscription>,
         targetMonthDate: LocalDate
     ): Double {
-        val today = LocalDate.now()
         var total = 0.0
 
         fun getSpendingForSub(sub: Subscription): Double {
-            // Jangan hitung jika target month sebelum bulan dibuatnya subscription ini
             val targetMonthStart = targetMonthDate.withDayOfMonth(1)
             val createdMonthStart = sub.createdAt.withDayOfMonth(1)
             if (targetMonthStart.isBefore(createdMonthStart)) {
@@ -115,7 +112,6 @@ class DashboardViewModel @Inject constructor(
             val paymentDates = getPaymentDatesInMonth(sub, targetMonthDate)
             var subTotal = 0.0
             for (date in paymentDates) {
-                // Untuk status ENDED, pastikan tanggal pembayaran tidak melebihi tanggal dinonaktifkan
                 val isWithinActivePeriod = if (sub.status.name == "ENDED") {
                     !date.isAfter(sub.nextPaymentDate)
                 } else {
@@ -154,7 +150,6 @@ class DashboardViewModel @Inject constructor(
         val allSubs = activeSubs + endedSubs
         if (allSubs.isEmpty()) return emptyList()
 
-        // Ambil semua bulan unik dari tanggal di-inputnya subscription (createdAt)
         val inputMonths = allSubs.map { it.createdAt.withDayOfMonth(1) }.toSet()
         val sortedMonths = inputMonths.sorted()
 
@@ -171,10 +166,7 @@ class DashboardViewModel @Inject constructor(
         return result
     }
 
-    private fun loadDashboardData() {
-=======
     fun loadDashboardData() {
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
         viewModelScope.launch {
             repository.getAllSubscriptions()
                 .onStart { _uiState.update { it.copy(isLoading = true) } }
@@ -183,47 +175,16 @@ class DashboardViewModel @Inject constructor(
                 }
                 .collect { subs ->
                     val stats = getDashboardStatsUseCase(subs)
-
-<<<<<<< HEAD
-                    // Mengambil data riwayat yang dinonaktifkan (ENDED) secara langsung
+                    
                     val endedSubs = try {
                         repository.getSubscriptionHistory().first()
                     } catch (e: Exception) {
                         emptyList()
-=======
-                    // Menghitung pengeluaran khusus bulan ini
-                    val today = LocalDate.now()
-                    val currentMonth = today.month
-                    val currentYear = today.year
-                    val nextMonth = today.plusMonths(1)
-                    val activeSubs = subs.filter { it.status.name == "ACTIVE" || it.status.name == "TRIAL" }
-
-                    val totalThisMonth = activeSubs.sumOf { sub ->
-                        val nextDate = sub.nextPaymentDate
-                        when (sub.billingCycle.name) {
-                            "MONTHLY" -> {
-                                val isCurrentMonth = nextDate.month == currentMonth && nextDate.year == currentYear
-                                val isNextMonth = nextDate.month == nextMonth.month && nextDate.year == nextMonth.year
-                                if (isCurrentMonth || isNextMonth) sub.price else 0.0
-                            }
-                            "WEEKLY" -> sub.price * 4.0
-                            "YEARLY" -> {
-                                val isCurrentMonth = nextDate.month == currentMonth && nextDate.year == currentYear
-                                if (isCurrentMonth) sub.price else 0.0
-                            }
-                            else -> 0.0
-                        }
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
-                    }
-                    subs.forEach { sub ->
-                        android.util.Log.d("DASH_SUBS", "name=${sub.name} price=${sub.price} cycle=${sub.billingCycle} nextPayment=${sub.nextPaymentDate}")
                     }
 
-                    // Menghitung pengeluaran khusus bulan ini
                     val activeSubs = subs.filter { it.status.name == "ACTIVE" || it.status.name == "TRIAL" }
                     val totalThisMonth = calculateTotalSpendForMonth(activeSubs, endedSubs, LocalDate.now())
 
-                    // Hitung data riwayat dan lifetime spending
                     val monthlyHistory = calculatePastMonthsSpending(activeSubs, endedSubs)
                     val lifetimeSpend = monthlyHistory.sumOf { it.amount }
 
@@ -244,7 +205,6 @@ class DashboardViewModel @Inject constructor(
                 .collect { history ->
                     _uiState.update { it.copy(subscriptionHistory = history) }
                     
-                    // Juga update history spending saat history berubah
                     val currentSubs = _uiState.value.rawSubscriptions
                     val activeSubs = currentSubs.filter { it.status.name == "ACTIVE" || it.status.name == "TRIAL" }
                     val monthlyHistory = calculatePastMonthsSpending(activeSubs, history)
@@ -269,12 +229,6 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-<<<<<<< HEAD
-=======
-
-
-    // 👈 FITUR BARU: Menandai subscription telah dibayar dan memajukan tanggal siklus berikutnya
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
     fun markAsPaid(subscription: Subscription) {
         viewModelScope.launch {
             val unconfirmed = subscription.getUnconfirmedPaymentDates()

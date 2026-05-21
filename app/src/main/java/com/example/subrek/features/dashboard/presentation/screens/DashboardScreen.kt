@@ -376,7 +376,6 @@ fun DashboardScreen(
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                 ) {
-<<<<<<< HEAD
                     Box(
                         modifier = Modifier
                             .background(
@@ -387,25 +386,6 @@ fun DashboardScreen(
                             .padding(24.dp)
                     ) {
                         Column {
-=======
-                    Column(modifier = Modifier.padding(24.dp)) {
-                        Text(
-                            "Total Konsumsi Bulan Ini",
-                            color = Slate500,
-                            fontSize = 13.sp
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            val formattedPrice = if (state.totalConsumptionThisMonth > 0) {
-                                NumberFormat
-                                    .getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
-                                        maximumFractionDigits = 0
-                                    }
-                                    .format(state.totalConsumptionThisMonth)
-                            } else {
-                                "Rp 0"
-                            }
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                             Text(
                                 "Total Konsumsi Bulan Ini",
                                 color = Color.White.copy(alpha = 0.8f),
@@ -506,7 +486,6 @@ fun DashboardScreen(
                             subscription = item,
                             onDelete = { viewModel.deleteSubscription(item.id) },
                             onClick = { onNavigateToDetail(item.id) },
-<<<<<<< HEAD
                             onMarkPaid = {
                                 val unconfirmed = item.getUnconfirmedPaymentDates()
                                 if (unconfirmed.size > 1) {
@@ -515,9 +494,6 @@ fun DashboardScreen(
                                     viewModel.markAsPaid(item)
                                 }
                             },
-=======
-                            onMarkPaid = { viewModel.markAsPaid(item) },
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                             showTrialTag = true
                         )
                     }
@@ -557,7 +533,6 @@ fun DashboardScreen(
                             subscription = item,
                             onDelete = { viewModel.deleteSubscription(item.id) },
                             onClick = { onNavigateToDetail(item.id) },
-<<<<<<< HEAD
                             onMarkPaid = {
                                 val unconfirmed = item.getUnconfirmedPaymentDates()
                                 if (unconfirmed.size > 1) {
@@ -566,9 +541,6 @@ fun DashboardScreen(
                                     viewModel.markAsPaid(item)
                                 }
                             },
-=======
-                            onMarkPaid = { viewModel.markAsPaid(item) },
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                             showTrialTag = false
                         )
                     }

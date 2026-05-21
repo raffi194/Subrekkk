@@ -167,13 +167,8 @@ fun TambahLanggananScreen(
                                     ) {
                                         Row(
                                             modifier = Modifier
-<<<<<<< HEAD
                                                 .padding(16.dp)
                                                 .fillMaxWidth(),
-=======
-                                                .fillMaxWidth()
-                                                .padding(16.dp),
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
@@ -389,11 +384,7 @@ fun TambahLanggananScreen(
                         Button(
                             onClick = {
                                 if (appName.isNotBlank()) {
-<<<<<<< HEAD
                                     viewModel.addOnlyCustomApp(
-=======
-                                    viewModel.addCustomAppOnly(
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                                         name = appName,
                                         imageUri = selectedImageUri
                                     )

@@ -58,7 +58,6 @@ class SubscriptionDetailViewModel @Inject constructor(
         }
     }
 
-<<<<<<< HEAD
     fun updateBillingDetails(
         price: Double,
         billingCycle: String,
@@ -70,17 +69,6 @@ class SubscriptionDetailViewModel @Inject constructor(
             try {
                 val status = if (isTrial) "TRIAL" else "ACTIVE"
                 repository.updateSubscriptionBilling(subscriptionId, price, billingCycle, startDate, paymentMethod, isTrial, status)
-=======
-    fun updateSubscriptionBilling() {
-        viewModelScope.launch {
-            try {
-                // Parsing harga
-                val price = priceInput.replace(".", "").replace(",", "").toDoubleOrNull() ?: 0.0
-
-                // Panggil repository
-                repository.updateSubscriptionBilling(subscriptionId, price, selectedCycle, startDateInput)
-
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
                 _uiState.update { it.copy(isUpdateSuccess = true) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessage = e.localizedMessage) }

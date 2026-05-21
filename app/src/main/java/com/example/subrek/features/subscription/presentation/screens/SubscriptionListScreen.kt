@@ -143,20 +143,10 @@ fun SubscriptionItem(
                     )
                 }
             }
-<<<<<<< HEAD
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Detail",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-=======
-            val formattedPrice = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
-                maximumFractionDigits = 0
-            }.format(subscription.price)
-            Text(
-                text = formattedPrice,
-                fontWeight = FontWeight.Bold,
-                color = Blue600
->>>>>>> 312a66543b8ece88c234f0cd48beabdb1c08e53c
             )
         }
     }
